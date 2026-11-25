@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>火山今天请假 · 立体绘本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: gentle, playful morning picture book for small children
+   IDEA: a clay-and-cardstock pop-up book open on a walnut desk; a little valley stands up page by page
+   PICTURE: the open book in 3D; 噗噗 the volcano, the bird and a two-sided sign acting out 12 shots
+   COLOUR: forest-green cloth cover, cream pages, meadow sage, terracotta and honey accents; warm morning light
+   TYPE: ZCOOL KuaiLe for titles and sound words, Noto Sans SC for story text; LAYOUT: full-bleed stage, header, progress bar at the bottom */
+:root{--ink:#2f2a22;--paper:#f7f0e2;--forest:#304d44;--honey:#c9963a;--terra:#b8553a}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#a8774c,#5b3a22 75%);color:var(--ink);font:16px/1.55 "Noto Sans SC",sans-serif;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#stage.drag{cursor:grabbing}#stage.orbit{cursor:move}
+header{position:fixed;left:16px;top:12px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none;z-index:5}
+.brand{pointer-events:auto;background:rgba(247,240,226,.92);border-radius:14px;padding:8px 14px 9px;box-shadow:0 6px 20px rgba(40,20,10,.25)}
+.brand b{display:block;font:32px/1.05 "ZCOOL KuaiLe",sans-serif;color:var(--forest)}
+.brand span{font-size:13px;color:#7a6a58}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;pointer-events:auto}
+button{font:inherit;font-size:15px;border:0;border-radius:999px;min-height:44px;padding:0 16px;background:rgba(247,240,226,.94);color:var(--ink);cursor:pointer;box-shadow:0 4px 14px rgba(40,20,10,.22)}
+button:hover{background:#fff}button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:3px solid var(--honey);outline-offset:2px}
+button.pri{background:var(--honey);color:#2b1d05;font-weight:700;white-space:nowrap}
+footer{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:5;width:min(720px,calc(100% - 24px))}
+.bar{flex:1;display:flex;align-items:center;gap:12px;background:rgba(247,240,226,.96);border-radius:18px;padding:8px 10px 8px 16px;box-shadow:0 8px 24px rgba(40,20,10,.3)}
+.bar .t{flex:1}.bar .t small{display:block;font-size:13px;color:#7a6a58}
+.bar .t strong{font:20px/1.2 "ZCOOL KuaiLe",sans-serif;color:var(--forest)}
+.prog{display:flex;gap:4px;margin-top:6px;height:8px}
+.prog i{flex:1;border-radius:4px;background:#e4d6bb;position:relative;overflow:hidden}
+.prog i.done{background:var(--honey)}
+.prog i.now::after{content:"";position:absolute;inset:0;background:var(--honey);transform-origin:left;animation:grow 1.6s ease-in-out infinite alternate}
+@keyframes grow{from{transform:scaleX(.15)}to{transform:scaleX(.85)}}
+.count{font-variant-numeric:tabular-nums;font-size:14px;color:#7a6a58;white-space:nowrap}
+.arrow{width:48px;padding:0;font-size:22px;flex:none}
+#cap{position:fixed;left:50%;bottom:108px;transform:translateX(-50%);max-width:min(640px,calc(100% - 32px));background:rgba(48,77,68,.92);color:#f7f0e2;padding:10px 18px;border-radius:14px;font-size:17px;text-align:center;opacity:0;transition:opacity .35s;pointer-events:none;z-index:4}
+#cap.on{opacity:1}
+#titlecard{position:fixed;left:50%;top:13%;transform:translate(-50%,-50%) scale(.9);font:clamp(36px,7vw,72px) "ZCOOL KuaiLe",sans-serif;color:#fff7e6;text-shadow:0 3px 0 #8a4a2a,0 0 24px rgba(0,0,0,.35);opacity:0;transition:opacity .8s,transform .8s;pointer-events:none;z-index:4;white-space:nowrap}
+#titlecard.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#bubbles{position:fixed;inset:0;pointer-events:none;z-index:3}
+.bub{position:absolute;transform:translate(-50%,calc(-100% - 14px));background:#fffaf0;border:2px solid #3b2f25;border-radius:18px;padding:7px 13px;font-size:16px;max-width:250px;width:max-content;box-shadow:0 4px 0 rgba(59,47,37,.25);animation:pop .28s cubic-bezier(.3,1.6,.5,1)}
+.bub::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;border:9px solid transparent;border-top-color:#3b2f25;border-bottom:0}
+.bub::before{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-6px;border:7px solid transparent;border-top-color:#fffaf0;border-bottom:0;z-index:1}
+.bub i{display:block;font-style:normal;font-size:12px;color:#8a7764}
+.bub.soft{border-style:dashed;color:#5a4a3a}
+.bub.sfx{background:none;border:0;box-shadow:none;font:26px "ZCOOL KuaiLe",sans-serif;color:#fff;text-shadow:0 2px 0 #8a4a2a,0 0 10px rgba(255,170,90,.9)}
+.bub.sfx::after,.bub.sfx::before{display:none}
+@keyframes pop{from{transform:translate(-50%,calc(-100% - 4px)) scale(.6);opacity:0}}
+#hint{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);font-size:13px;color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.5);white-space:nowrap;z-index:2;transition:opacity .4s}
+#load{position:fixed;inset:0;display:grid;place-items:center;background:var(--forest);color:#f3dfb0;z-index:20;font:24px "ZCOOL KuaiLe",sans-serif;transition:opacity .6s;text-align:center;padding:20px}
+#load small{display:block;font:14px "Noto Sans SC",sans-serif;opacity:.75;margin-top:8px}
+#toc{position:fixed;inset:0;background:rgba(20,15,10,.5);display:none;place-items:center;z-index:10}
+#toc.on{display:grid}
+#toc .card{background:var(--paper);border-radius:20px;padding:22px 22px 16px;width:min(420px,calc(100% - 32px));box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#toc h2{margin:0 0 10px;font:28px "ZCOOL KuaiLe",sans-serif;color:var(--forest)}
+#toc ol{list-style:none;margin:0;padding:0}
+#toc li button{width:100%;text-align:left;margin:4px 0;box-shadow:none;background:#efe3cc;border-radius:12px;display:flex;gap:10px;align-items:center}
+#toc li button span{color:#8a7764;font-variant-numeric:tabular-nums;min-width:2.4em}
+#toc li button em{margin-left:auto;font-style:normal;font-size:13px;color:#8a7764}
+@media(max-width:600px){#bRotL,#bRotR{width:44px;padding:0}.brand b{font-size:20px;white-space:nowrap}.brand span{display:none}.tools button{padding:0 12px;font-size:14px}#hint{display:none}.bar{gap:8px;padding-left:12px}.bar .t strong{font-size:16px}.count{display:none}#cap{bottom:100px;font-size:15px}.arrow{width:44px}}
+@media(prefers-reduced-motion:reduce){.bub{animation:none}.prog i.now::after{animation:none;transform:scaleX(.5)}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div id="bubbles"></div>
+<header>
+  <div class="brand"><b>火山今天请假</b><span>一本会动的黏土立体书</span></div>
+  <div class="tools">
+    <button id="bRotL" aria-label="向左转" title="向左转（Q）">↺</button>
+    <button id="bRotR" aria-label="向右转" title="向右转（E）">↻</button>
+    <button id="bReset">重置视角</button>
+    <button id="bToc">目录</button>
+    <button id="bSnd" aria-pressed="true">声音：开</button>
+  </div>
+</header>
+<div id="titlecard">火山今天请假</div>
+<div id="cap"></div>
+<div id="hint">拖动书页翻页 · 拖动书外空白处转动 · 滚轮缩放 · 点一点噗噗和小鸟</div>
+<footer>
+  <button class="arrow" id="bPrev" aria-label="上一页">‹</button>
+  <div class="bar">
+    <div class="t"><small id="sub">封面</small><strong id="ttl">火山今天请假</strong><div class="prog" id="prog" aria-label="这一页的进度"></div></div>
+    <span class="count" id="cnt">封面</span>
+    <button class="pri" id="bPlay">▶ 打开绘本</button>
+  </div>
+  <button class="arrow" id="bNext" aria-label="下一页">›</button>
+</footer>
+<div id="toc"><div class="card"><h2>目录</h2><ol id="tocList"></ol><p style="margin:10px 0 0;text-align:right"><button id="bTocX">关闭</button></p></div></div>
+<div id="load"><div>正在搭起小山谷…<small id="lp">0%</small></div></div>
+<script src="manifest.js"></script>
+<script type="module">
+import * as THREE from 'three';
+{
+const $=id=>document.getElementById(id);
+const PI=Math.PI,clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+const eio=t=>t<.5?2*t*t:1-(-2*t+2)**2/2,eout=t=>1-(1-t)**3,eback=t=>{const c=1.6;return 1+(c+1)*(t-1)**3+c*(t-1)**2},lin=x=>x;
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+
+/* ---------- story ---------- */
+const SP=[
+ {t:'火山今天请假',sub:'封面'},
+ {t:'山谷的早安',sub:'第一页 · 镜 01–02',text:['噗噗每天都会冒个烟圈，说一声早上好。','今天有只小鸟刚搬来，被突然的「噗」吓了一跳。']},
+ {t:'今天请假',sub:'第二页 · 镜 03–05',text:['噗噗把牌子翻成「今天请假」，','也把那句早上好憋在了肚子里。']},
+ {t:'山坡打了个嗝',sub:'第三页 · 镜 06–07',text:['山坡猛地弹了一下。','小鸟飞到牌子上，听见噗噗说，它其实一直想打个招呼。']},
+ {t:'准备好了吗',sub:'第四页 · 镜 08–10',text:['噗噗先眨一下眼。小鸟站稳，点点头。','早上好跟着一个歪歪的烟圈飞上了天。']},
+ {t:'明天也见',sub:'第五页 · 镜 11–12',text:['小鸟把牌子翻回了「早上好」。','第二天，是它先跟噗噗打的招呼。']}
+];
+const N=SP.length-1;
+
+/* ---------- renderer ---------- */
+const cv=$('stage');
+let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true})}catch(e){$('load').firstElementChild.innerHTML='这个浏览器没法开启 3D 画面<small>请用电脑或手机上的 Chrome、Safari、Edge 打开，并确认已开启硬件加速。</small>';throw e}
+R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,.05,40);
+const hemi=new THREE.HemisphereLight('#fff4e6','#8a7a5a',1.35);scene.add(hemi);
+const sun=new THREE.DirectionalLight('#fff0d8',2.1);sun.position.set(-1.4,1.9,1.1);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-1.5,right:1.5,top:1.5,bottom:-1.5,near:.1,far:8});sun.shadow.bias=-.0006;sun.shadow.normalBias=.01;scene.add(sun,sun.target);
+
+/* ---------- textures ---------- */
+const TX={};const loader=new THREE.TextureLoader();
+async function loadAll(){const keys=Object.keys(M);let n=0;
+  await Promise.all(keys.map(k=>loader.loadAsync(`WebP/${k}.webp`).then(t=>{t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;TX[k]=t;$('lp').textContent=Math.round(++n/keys.length*100)+'%'})));
+  await Promise.all(['500 36px "Noto Sans SC"','60px "ZCOOL KuaiLe"'].map(f=>document.fonts.load(f,'火山今天请假噗噗小鸟早上好').catch(()=>0)))}
+
+/* ---------- pages (x -1..1, z -0.7..0.7; scene z < 0.2) ---------- */
+const CW=900,CHT=1260,SCN=.92/1.4*CHT;
+const DECALS={
+ 1:[['meadow_path_decal',.38,-.12,1.05,-12],['daisy_speckles_decal',.1,.02,.34,0],['moss_patch_decal',.03,-.02,.2,0],['daisy_speckles_decal',-.62,.08,.3,20]],
+ 2:[['meadow_path_decal',.32,-.1,1.05,-10],['fallen_leaves_decal',-.72,-.22,.16,0],['moss_patch_decal',.24,-.32,.22,0],['daisy_speckles_decal',-.3,.06,.3,0]],
+ 3:[['meadow_path_decal',.32,-.1,1.05,-10],['fallen_leaves_decal',-.72,-.22,.16,0],['moss_patch_decal',.24,-.32,.22,0],['daisy_speckles_decal',.6,.04,.3,15]],
+ 4:[['meadow_path_decal',.42,-.06,1,-8],['moss_patch_decal',.36,-.34,.22,0],['daisy_speckles_decal',-.55,.05,.32,0],['daisy_speckles_decal',.6,.08,.28,30]],
+ 5:[['meadow_path_decal',.38,-.12,1.05,-12],['daisy_speckles_decal',-.1,.04,.34,0],['daisy_speckles_decal',.8,.06,.3,40],['moss_patch_decal',.22,-.34,.2,0],['fallen_leaves_decal',.62,-.3,.14,0]]};
+function wrapText(c,txt,x,y,maxW,lh){let line='';for(const ch of txt){if(c.measureText(line+ch).width>maxW&&line){c.fillText(line,x,y);y+=lh;line=ch.trim()?ch:''}else line+=ch}if(line)c.fillText(line,x,y);return y+lh}
+function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function pageCanvas(i,side){
+  const c=document.createElement('canvas');c.width=CW;c.height=CHT;const g=c.getContext('2d');
+  if(i===0){g.drawImage(TX.cover_front.image,0,0,CW,CHT);return c}
+  const ox=side==='L'?-1:0,W=(x,z)=>[(x-ox)*CW,(z+.7)/1.4*CHT];
+  g.drawImage(TX.cream_paper.image,0,0,CW,CHT);
+  const x0=side==='L'?44:26,x1=side==='L'?CW-26:CW-44;
+  g.save();rrect(g,x0,40,x1-x0,SCN-40,46);g.clip();
+  g.drawImage(TX.meadow_paper.image,0,0,CW,CW*1280/853);
+  for(const [k,x,z,w,rot] of DECALS[i]||[]){const im=TX[k].image,h=w*im.height/im.width,[px,py]=W(x,z);g.save();g.translate(px,py);g.rotate(rot*PI/180);g.scale(1,(1/1.4*CHT)/CW);g.drawImage(im,-w*CW/2,-h*CW/2,w*CW,h*CW);g.restore()}
+  const sh=g.createLinearGradient(0,SCN-60,0,SCN);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(60,70,30,.12)');g.fillStyle=sh;g.fillRect(0,0,CW,SCN);
+  g.restore();
+  g.strokeStyle='rgba(120,140,90,.45)';g.lineWidth=3;g.setLineDash([14,10]);rrect(g,x0+10,50,x1-x0-20,SCN-60,38);g.stroke();g.setLineDash([]);
+  const s=SP[i];g.textAlign='left';
+  if(side==='L'){g.font='56px "ZCOOL KuaiLe"';g.fillStyle='#304d44';g.fillText(s.t,86,SCN+112);
+    g.font='500 32px "Noto Sans SC"';g.fillStyle='#4a4236';wrapText(g,s.text[0],86,SCN+182,CW-160,50)}
+  else{g.font='500 32px "Noto Sans SC"';g.fillStyle='#4a4236';wrapText(g,s.text[1],70,SCN+130,CW-150,50);
+    g.font='26px "Noto Sans SC"';g.fillStyle='#9a8a74';g.textAlign='right';g.fillText(`— ${i} —`,CW-60,CHT-50)}
+  const gr=side==='L'?g.createLinearGradient(CW,0,CW-90,0):g.createLinearGradient(0,0,90,0);gr.addColorStop(0,'rgba(60,40,20,.25)');gr.addColorStop(1,'rgba(60,40,20,0)');g.fillStyle=gr;g.fillRect(0,0,CW,CHT);
+  return c}
+const PT=[];
+function mkTex(c,mirror){const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;if(mirror){t.wrapS=THREE.RepeatWrapping;t.repeat.x=-1}return t}
+function buildPages(){for(let i=0;i<=N;i++){const L=i?pageCanvas(i,'L'):null,Rc=pageCanvas(i,'R');PT[i]={L:L&&mkTex(L),Lm:L&&mkTex(L,true),R:mkTex(Rc)}}}
+
+/* ---------- table & book ---------- */
+let table;
+const pageMat=()=>new THREE.MeshStandardMaterial({roughness:.95,emissive:'#ffffff',emissiveIntensity:.08});
+const book=new THREE.Group();scene.add(book);
+const boardM=new THREE.MeshStandardMaterial({color:'#304d44',roughness:.9}),blockM=new THREE.MeshStandardMaterial({color:'#efe6d2',roughness:1});
+function half(x){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.BoxGeometry(1.06,.012,1.48),boardM);b.position.set(x*1.03/2+x*.01,-.042,0);b.receiveShadow=true;
+  const k=new THREE.Mesh(new THREE.BoxGeometry(1,.034,1.4),blockM);k.position.set(x*.5,-.018,0);k.receiveShadow=true;g.add(b,k);book.add(g);return g}
+const halfL=half(-1);half(1);
+const pgGeo=new THREE.PlaneGeometry(1,1.4).rotateX(-PI/2);
+const pageL=new THREE.Mesh(pgGeo,pageMat()),pageR=new THREE.Mesh(pgGeo,pageMat());pageL.position.set(-.5,.0005,0);pageR.position.set(.5,.0005,0);pageL.receiveShadow=pageR.receiveShadow=true;book.add(pageL,pageR);
+const COLS=40,leafGeo=new THREE.PlaneGeometry(1,1.4,COLS,1).rotateX(-PI/2).translate(.5,0,0);
+const leafS=Float32Array.from({length:leafGeo.attributes.position.count},(_,i)=>leafGeo.attributes.position.getX(i));
+const leafF=new THREE.Mesh(leafGeo,pageMat()),leafB=new THREE.Mesh(leafGeo,pageMat());leafB.material.side=THREE.BackSide;leafF.castShadow=leafB.castShadow=true;leafF.visible=leafB.visible=false;book.add(leafF,leafB);
+const PAGE_MATS=[pageL.material,pageR.material,leafF.material,leafB.material],CUT_MATS=[];
+function setLeaf(p){const k=.9*Math.sin(p*PI),xs=[],ys=[];let x=0,y=0;
+  for(let i=0;i<=COLS;i++){const s=i/COLS;xs.push(x);ys.push(y);const ph=p*PI-k*(s-.35);x+=Math.cos(ph)/COLS;y+=Math.sin(ph)/COLS}
+  const pos=leafGeo.attributes.position;for(let i=0;i<pos.count;i++){const c=Math.round(leafS[i]*COLS);pos.setX(i,xs[c]);pos.setY(i,ys[c]+.003+.002*Math.sin(p*PI))}pos.needsUpdate=true;leafGeo.computeVertexNormals()}
+
+/* ---------- actors: manifest-anchored cutouts ---------- */
+const POPS=[],geoC=new THREE.PlaneGeometry(1,1);
+const BACKDROP=['distant_ridge','mountains','valley_grove','hill','valley_mist','morning_cloud','cloud','sunrise'];
+class Actor{
+  constructor(poses,h,x,z,o={}){
+    if(typeof poses==='string')poses={a:{k:poses,nat:o.nat||0}};
+    this.poses=poses;this.h=h;this.dir=o.dir||1;this.sc=1;this.sy=1;this.lean=0;this.jump=0;this.lift=o.lift||0;this.f=0;this.on=false;this.talk=0;this.op=o.op??1;
+    this.ph=Math.random()*9;this.sway=o.sway??0;this.order=o.order??3;this.name=o.name;this.bob=o.bob||0;this.drift=o.drift||0;this.fx=!!o.fx;this.att=null;this.roll=0;
+    const k0=Object.values(poses)[0].k;this.bb=o.bb??!BACKDROP.includes(k0);
+    const m=M[k0];this.texH=h*m.s[1]/(m.vb[3]-m.vb[1]);
+    this.g=new THREE.Group();this.hinge=new THREE.Group();this.body=new THREE.Group();
+    const mk=()=>{const mat=o.add?new THREE.MeshBasicMaterial({side:THREE.DoubleSide,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}):new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:1,emissive:'#ffffff',emissiveIntensity:.08,...(this.fx?{transparent:true,depthWrite:false,alphaTest:.02}:{alphaTest:.5})});if(!o.add)CUT_MATS.push(mat);
+      const me=new THREE.Mesh(geoC,mat);me.userData.actor=this;if(!this.fx){me.castShadow=true;me.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,alphaTest:.5})}return me};
+    this.mesh=mk();this.body.add(this.mesh);
+    if(o.blend){this.mesh2=mk();this.mesh2.material.transparent=true;this.mesh2.position.z=.0015;this.body.add(this.mesh2);this.bl=0;this.pose2=Object.keys(poses)[0]}
+    this.g.add(this.hinge);this.hinge.add(this.body);(o.parent||book).add(this.g);this.g.position.set(x,0,z);
+    this.home=[x,z,this.lift];this.home0=[x,z,this.lift];this.setPose(Object.keys(poses)[0]);POPS.push(this);
+  }
+  setPose(n){this.pose=n;const p=this.poses[n];this.k=p.k;this.nat=p.nat||0;this.ph2=p.h;const t=TX[p.k];this.mesh.material.map=t;if('emissiveMap' in this.mesh.material)this.mesh.material.emissiveMap=t;this.mesh.material.needsUpdate=true;
+    if(this.mesh.customDepthMaterial){this.mesh.customDepthMaterial.map=t;this.mesh.customDepthMaterial.needsUpdate=true}return this}
+  blendTo(n){this.pose2=n;const t=TX[this.poses[n].k];this.mesh2.material.map=this.mesh2.material.emissiveMap=t;this.mesh2.material.needsUpdate=true}
+  dims(k,h2){const m=M[k];const hT=h2?h2*m.s[1]/(m.vb[3]-m.vb[1]):this.texH;return{m,hT,wT:hT*m.s[0]/m.s[1]}}
+  flip(){return this.nat?this.dir*this.nat:1}
+  pt(px,py,k=this.k,h2=this.ph2){const {m,hT,wT}=this.dims(k,h2),p=m.p.pivot;return V3((px-p[0])/m.s[0]*wT*this.flip()*this.sc,(p[1]-py)/m.s[1]*hT*this.sc*this.sy,.01)}
+  named(name){const p=M[this.k].p[name];return this.pt(p[0],p[1])}
+  world(v){return this.body.localToWorld(v.clone())}
+  top(){const m=M[this.k];return this.world(this.pt(m.p.pivot[0],m.vb[1]-10))}
+  at(x,z){this.g.position.x=x;this.g.position.z=z;return this}
+  face(d){this.dir=d;return this}
+  reset(){this.at(this.home[0],this.home[1]);this.lift=this.home[2];this.lean=0;this.jump=0;this.sc=1;this.sy=1;this.talk=0;this.att=null;this.roll=0;if(this.mesh2)this.bl=0}
+  place(mesh,k,h2){const {m,hT,wT}=this.dims(k,h2),fl=this.flip(),s=this.sc,p=m.p.pivot,pu=p[0]/m.s[0],pv=1-p[1]/m.s[1];
+    mesh.scale.set(wT*s*fl,hT*s*this.sy,1);mesh.position.x=(.5-pu)*wT*s*fl;mesh.position.y=(.5-pv)*hT*s*this.sy}
+  update(t,G,yaw){
+    this.g.visible=this.on&&this.f*G>.001&&this.op>.005;
+    this.g.rotation.y=this.bb?yaw:0;this.hinge.rotation.x=-(1-this.f*G)*PI/2;
+    this.place(this.mesh,this.k,this.ph2);this.mesh.rotation.z=this.roll;
+    if(this.fx)this.mesh.material.opacity=this.op;
+    if(this.mesh2){this.place(this.mesh2,this.poses[this.pose2].k,this.poses[this.pose2].h);this.mesh2.visible=this.bl>.01;this.mesh2.material.opacity=this.bl}
+    this.body.position.y=this.jump+this.lift+(this.talk?Math.abs(Math.sin(t*12))*.004:0)+(this.bob?Math.sin(t*1.3+this.ph)*this.bob:0);
+    this.body.position.x=this.drift?Math.sin(t*.12+this.ph)*this.drift:0;
+    this.body.rotation.z=this.lean+Math.sin(t*1.6+this.ph)*this.sway;
+  }
+}
+const prop=(k,h,x,z,o={})=>new Actor(k,h,x,z,o);
+let pupu,bird,tree,sapling,straw,pebble,nest,peek,fly,flowers,smoke,marks,seeds,leafA,mist,beams,glow,sunA,signRoot,signG,signF,signB,cord;
+const SET={};  // every placeable piece by name
+function buildActors(){
+  const S=(name,a)=>(SET[name]=a);
+  S('ridgeL',prop('distant_ridge',.13,-.5,-.695,{order:0}));S('ridgeR',prop('distant_ridge',.12,.5,-.695,{order:0,nat:1,dir:-1}));
+  S('mistA',mist=prop('valley_mist',.07,0,-.682,{order:0,fx:true,lift:.05,drift:.08,op:0}));
+  S('mountL',prop('mountains',.18,-.5,-.67,{order:0}));S('mountR',prop('mountains',.16,.5,-.672,{order:0,nat:1,dir:-1}));
+  S('groveL',prop('valley_grove',.1,-.55,-.62,{order:1}));S('groveR',prop('valley_grove',.09,.48,-.625,{order:1,nat:1,dir:-1}));
+  S('sun',sunA=prop('sunrise',.17,-.64,-.699,{order:0,lift:.15}));
+  S('cloud',prop('cloud',.08,-.12,-.699,{order:0,lift:.32,drift:.07}));S('mcloud',prop('morning_cloud',.05,.48,-.699,{order:0,lift:.29,drift:.05}));
+  S('hillL',prop('hill',.11,-.42,-.5,{order:1}));S('hillR',prop('hill',.09,.5,-.52,{order:1,nat:1,dir:-1}));
+  S('tree',tree=prop('tree',.64,.28,-.44,{order:2,sway:.003,nat:1}));
+  S('sapling',sapling=prop('little_sapling',.27,.86,-.55,{order:2,sway:.006}));
+  S('stump',prop('small_stump',.075,.84,-.06,{order:3}));
+  S('berry',prop('berry_shrub',.1,-.32,-.42,{order:2}));S('silver',prop('silverleaf_shrub',.08,.52,-.4,{order:2}));
+  S('stones',prop('mossy_stones',.055,.02,-.02,{order:3}));S('coral',prop('coral_flower_strip',.045,-.15,-.2,{order:3,sway:.01}));
+  S('tuft',prop('grass_tuft',.05,-.3,-.05,{order:3,sway:.01}));S('mush',prop('tiny_mushrooms',.075,.16,.1,{order:4}));
+  S('clover',prop('lavender_clover',.05,.6,.12,{order:4,sway:.01}));S('broad',prop('broadleaf_border',.06,.8,.16,{order:4}));
+  S('fern',prop('fern_fronds',.1,-.92,.12,{order:4,sway:.012}));S('seed',prop('seed_grass',.14,.95,-.12,{order:4,sway:.02}));
+  S('fern2',prop('fern_fronds',.09,.9,.1,{order:4,sway:.012,nat:1,dir:-1}));S('seed2',prop('seed_grass',.12,-.95,-.15,{order:4,sway:.02,nat:1,dir:-1}));
+  flowers=[prop('flower_orange',.075,-.86,.08,{order:4,sway:.01}),prop('flower_cream',.08,-.68,.04,{order:4,sway:.01}),prop('flower_yellow',.1,-.78,-.06,{order:4,sway:.01})];
+  flowers.forEach((f,i)=>{S('fl'+i,f);f.name='小花'});
+  S('pupu',pupu=new Actor({idle:{k:'pupu_idle'},hold:{k:'pupu_hold'},hiccup:{k:'pupu_hiccup'},talk:{k:'pupu_talk'},wink:{k:'pupu_wink'},reach:{k:'pupu_reach'}},.4,-.5,-.3,{order:5,name:'噗噗',blend:true}));
+  S('bird',bird=new Actor({stand:{k:'bird_stand',nat:-1},fly:{k:'bird_fly',nat:-1},startled:{k:'bird_startled',nat:-1},tilt:{k:'bird_tilt',nat:-1}},.13,1.3,-.3,{order:6,name:'小鸟',sway:.01}));bird.h=.18;bird.texH=.18*M.bird_stand.s[1]/(M.bird_stand.vb[3]-M.bird_stand.vb[1]);
+  S('straw',straw=prop('straw',.018,.45,-.1,{order:6,nat:1}));straw.texH=.13*M.straw.s[1]/M.straw.s[0];
+  S('pebble',pebble=prop('pebble',.035,-.5,-.15,{order:5,lift:.017}));
+  S('fly',fly=new Actor({o:{k:'butterfly_wings_open'},c:{k:'butterfly_wings_folded'}},.04,-.68,-.16,{order:6,lift:.2,bob:.01}));
+  S('leaf',leafA=prop('drifting_leaf',.035,-.6,-.05,{order:6,fx:true,op:0}));
+  seeds=[0,1,2].map(i=>S('seed'+i,prop('dandelion_seed',.035,-.75+i*.07,-.02,{order:6,fx:true,op:0})));
+  S('beams',beams=prop('slant_sunbeams',.42,.38,-.3,{order:6,fx:true,add:true,lift:.26,op:0,bb:true}));
+  // smoke and hiccup marks ride on 噗噗
+  smoke={puff:prop('smoke_puff',.07,0,0,{parent:pupu.body,fx:true,op:0}),ring:prop('smoke_ring',.13,0,0,{parent:pupu.body,fx:true,op:0}),
+    crooked:prop('smoke_ring_crooked',.12,0,0,{parent:pupu.body,fx:true,op:0}),burst:prop('smoke_ring_burst',.13,0,0,{parent:pupu.body,fx:true,op:0})};
+  marks=prop('hiccup_marks',.06,0,0,{parent:pupu.body,fx:true,op:0});
+  for(const s of [...Object.values(smoke),marks]){s.bb=false;s.f=1;s.on=true}
+  // sign: cord hangs from the tree's lower branch; the two-sided board swings and flips under it
+  signRoot=new THREE.Group();tree.body.add(signRoot);
+  const plane=(k,w,piv)=>{const m=M[k],h=w*m.s[1]/m.s[0],mat=new THREE.MeshStandardMaterial({map:TX[k],alphaTest:.5,roughness:1,emissive:'#fff',emissiveMap:TX[k],emissiveIntensity:.08});CUT_MATS.push(mat);
+    const me=new THREE.Mesh(geoC,mat);me.scale.set(w,h,1);me.position.set((.5-piv[0]/m.s[0])*w,(piv[1]/m.s[1]-.5)*h,0);me.castShadow=true;me.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:TX[k],alphaTest:.5});return me};
+  const SW=.25,holes=(1160.42-116.63)/1280*SW,CWD=holes/((1260.89-19.11)/1280),drop=(350.91-6.43)/368*CWD*368/1280;
+  cord=plane('sign_cord',CWD,M.sign_cord.p.pivot);signRoot.add(cord);
+  signG=new THREE.Group();signG.position.y=-drop;signRoot.add(signG);
+  signF=plane('sign_hello',SW,M.sign_hello.p.pivot);signF.material.side=THREE.FrontSide;signF.position.z=.002;signF.userData.sign=1;
+  const bw=new THREE.Group();bw.rotation.y=PI;signB=plane('sign_day_off',SW,M.sign_day_off.p.pivot);signB.material.side=THREE.FrontSide;signB.position.z=.002;signB.userData.sign=1;bw.add(signB);
+  signG.add(signF,bw);signG.userData.topY=(94.55-13)/489*SW*489/1280;
+  // nest on the upper branch, the peeking bird hides behind its front rim
+  nest=prop('nest',.065,0,0,{parent:tree.body,order:6});nest.bb=false;
+  peek=prop('bird_peek',.08,0,0,{parent:tree.body,order:6,nat:-1,name:'小鸟'});peek.bb=false;
+  glow=prop('morning_glow',.1,0,0,{parent:tree.body,fx:true,add:true,op:0});glow.bb=false;
+}
+const SIGN={face:0,swing:0,spin:0};
+function signTop(){return signG.localToWorld(V3(0,signG.userData.topY+.002,.012))}
+function perch(name){return tree.world(tree.named(name))}
+function sapTop(){return sapling.world(sapling.pt(330,250))}
+function beakWorld(){return bird.world(bird.named('beak'))}
+
+/* ---------- lighting moods ---------- */
+const MOODS={morning:{sky:'#fff4e6',gnd:'#8a7a5a',hi:1.35,sc:'#fff0d8',si:2.1,em:.08,bg:['#a8774c','#5b3a22']},
+ dim:{sky:'#a9b6d8',gnd:'#4a4a5a',hi:.8,sc:'#c8d2ff',si:.7,em:.16,bg:['#5a5f78','#2a2a36']},
+ dawn:{sky:'#ffe6c8',gnd:'#9a7a5a',hi:1.4,sc:'#ffd9a8',si:2.3,em:.1,bg:['#c9895a','#6b4026']}};
+const LS={sky:new THREE.Color(),gnd:new THREE.Color(),sc:new THREE.Color(),a:new THREE.Color(),b:new THREE.Color(),hi:1,si:1,em:.08};
+const snap=m=>{const M2=MOODS[m];return{sky:new THREE.Color(M2.sky),gnd:new THREE.Color(M2.gnd),sc:new THREE.Color(M2.sc),a:new THREE.Color(M2.bg[0]),b:new THREE.Color(M2.bg[1]),hi:M2.hi,si:M2.si,em:M2.em}};
+function applyLS(){hemi.color.copy(LS.sky);hemi.groundColor.copy(LS.gnd);hemi.intensity=LS.hi;sun.color.copy(LS.sc);sun.intensity=LS.si;PAGE_MATS.forEach(m=>m.emissiveIntensity=LS.em);CUT_MATS.forEach(m=>m.emissiveIntensity=LS.em);
+  document.body.style.background=`radial-gradient(ellipse at 50% 35%,#${LS.a.getHexString()},#${LS.b.getHexString()} 75%)`}
+function mood(m,d=1400,bound=false){const A={sky:LS.sky.clone(),gnd:LS.gnd.clone(),sc:LS.sc.clone(),a:LS.a.clone(),b:LS.b.clone(),hi:LS.hi,si:LS.si,em:LS.em},B=snap(m);
+  return tween(d,t=>{for(const k of['sky','gnd','sc','a','b'])LS[k].lerpColors(A[k],B[k],t);for(const k of['hi','si','em'])LS[k]=lerp(A[k],B[k],t);applyLS()},eio,bound)}
+
+/* ---------- tweens & runs ---------- */
+let RUN=0,now=0;const TW=[],ABORT={};
+function tween(d,fn,ease=eio,bound=true){return new Promise(res=>{TW.push({t0:now,d:Math.max(1,d),fn,ease,res,tok:bound?RUN:null})})}
+const CZ=.0;
+function mkR(tok){const ck=async p=>{const v=await p;if(tok!==RUN)throw ABORT;return v};
+  return{tw:(d,fn,e)=>ck(tween(d,fn,e)),wait:ms=>ck(tween(ms,()=>{})),all:(...ps)=>ck(Promise.all(ps)),
+    say:(a,txt,o={})=>ck(say(a,txt,o)),narr:(txt,o)=>ck(narrate(txt,o)),jump:(a,h,d)=>ck(jump(a,h,d)),
+    cam:(x,z,zoom)=>{camT.x=x*.3;camT.z=CZ+(z-CZ)*.3;camT.zoom=Math.max(.85,zoom)},mood:(m,d)=>ck(mood(m,d||1600,true))}}
+
+/* ---------- bubbles, voice ---------- */
+const BUBS=[];
+function bubble(a,txt,cls,ms,at){const el=document.createElement('div');el.className='bub'+(cls?' '+cls:'');
+  if((!cls||cls==='soft')&&a&&a.name){const i=document.createElement('i');i.textContent=a.name;el.append(i)}el.append(txt);$('bubbles').append(el);
+  const b={el,a,at,until:now+ms};BUBS.push(b);return b}
+function clearBubs(){BUBS.splice(0).forEach(b=>b.el.remove());$('cap').classList.remove('on')}
+let SND=true,voice=null,VO={},CURA=null;
+fetch('vo/vo.json').then(r=>r.ok?r.json():{}).then(j=>{VO=j||{};for(const v of Object.values(VO)){const a=new Audio();a.preload='auto';a.src='vo/'+v.f}}).catch(()=>{});
+function pickVoice(){const vs=window.speechSynthesis?.getVoices?.()||[];voice=vs.find(v=>/zh[-_]CN/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+const voDur=(role,txt)=>VO[role+'|'+txt]?.d;
+function speak(txt,who){return new Promise(res=>{if(!SND)return res();const v=VO[who+'|'+txt];
+  if(v){try{const a=new Audio('vo/'+v.f);CURA=a;const done=()=>{if(CURA===a)CURA=null;res()};a.onended=a.onerror=done;a.play().catch(done);setTimeout(done,v.d*1000+1800)}catch(e){res()}return}
+  if(!window.speechSynthesis||!voice)return res();
+  try{const u=new SpeechSynthesisUtterance(txt.replace(/[「」—…]/g,' '));u.voice=voice;u.lang=voice.lang;const P={pp:[.8,.95],ppq:[.8,.85],bd:[1.7,1.08],n:[1,.92]}[who]||[1,1];u.pitch=P[0];u.rate=P[1];
+    u.onend=u.onerror=()=>res();speechSynthesis.speak(u);setTimeout(res,txt.length*420+2500)}catch(e){res()}})}
+function hush(){try{speechSynthesis.cancel()}catch(e){}if(CURA){try{CURA.pause()}catch(e){}CURA=null}}
+const roleOf=(a,o={})=>a===bird||a===peek?'bd':o.soft?'ppq':'pp';
+function say(a,txt,o={}){const role=roleOf(a,o),d=voDur(role,txt);
+  const ms=o.ms||(o.sfx?1000:(d?d*1000+350:1000+txt.length*190))+(o.cut?0:0);
+  bubble(a,txt,o.sfx?'sfx':o.soft?'soft':'',(o.cut||ms)+(o.sfx?200:500),o.at);
+  if(o.sfx){o.snd&&o.snd();return tween(ms,()=>{})}
+  a.talk=1;return Promise.all([tween(o.cut||ms,()=>{}),speak(txt,role)]).then(()=>{a.talk=0})}
+function narrate(txt,o={}){const c=$('cap');c.textContent=txt;c.classList.add('on');const d=voDur('n',txt),ms=o.ms||(d?d*1000+450:1200+txt.length*170);
+  return Promise.all([tween(ms,()=>{}),speak(txt,'n')]).then(()=>c.classList.remove('on'))}
+
+/* ---------- sound design ---------- */
+let AC=null,NB=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();NB=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}catch(e){}}if(AC?.state==='suspended')AC.resume();return SND?AC:null}
+function noise(dur,f0,f1,vol,type='lowpass',att=.05,q=1,delay=0){const A=ac();if(!A)return;const t=A.currentTime+delay,s=A.createBufferSource();s.buffer=NB;s.loop=true;const f=A.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(40,f1),t+dur);
+  const g=A.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f).connect(g).connect(A.destination);s.start(t);s.stop(t+dur+.05)}
+function tone(f0,f1,dur,vol,type='sine',delay=0){const A=ac();if(!A)return;const t=A.currentTime+delay,o=A.createOscillator(),g=A.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g).connect(A.destination);o.start(t);o.stop(t+dur+.02)}
+const S={
+  puff:()=>{noise(.35,900,180,.35,'lowpass',.01);tone(140,70,.25,.18)},           // round 噗
+  bigpuff:()=>{noise(.18,2400,300,.7,'lowpass',.004);tone(110,50,.3,.35,'triangle')}, // sudden paper-bag 噗！
+  softpuff:()=>noise(.5,600,200,.14,'lowpass',.08),
+  hic:(big)=>{tone(big?190:240,big?95:150,big?.22:.14,big?.32:.16,'triangle');noise(.12,700,200,big?.25:.1,'lowpass',.005)},
+  bop:(i)=>tone([980,760,560][i]||600,([980,760,560][i]||600)*.7,.12,.16,'sine'),
+  click:()=>{noise(.03,4000,2500,.25,'bandpass',.001,4);noise(.03,3000,2000,.18,'bandpass',.001,4,.06)},
+  flap:(n=2)=>{for(let i=0;i<n;i++)noise(.09,1800,700,.18,'bandpass',.005,1.5,i*.12)},
+  gurgle:()=>{for(let i=0;i<5;i++)tone(120+Math.random()*90,70,.12,.12,'sine',i*.1)},
+  exhale:()=>noise(1.4,900,250,.12,'lowpass',.5),
+  rustle:()=>noise(.35,2500,4000,.1,'bandpass',.08),
+  roll:()=>{for(let i=0;i<6;i++)tone(300+Math.random()*80,200,.05,.06,'triangle',i*.09)},
+  chirp:()=>{tone(2600,3400,.08,.06,'sine');tone(2800,3600,.08,.05,'sine',.12)},
+  chime:()=>{tone(880,870,1.2,.08);tone(1318,1300,1.4,.06,'sine',.08)}};
+
+/* ---------- actions ---------- */
+function jump(a,h=.04,d=380){return tween(d,t=>{a.jump=Math.sin(t*PI)*h},lin)}
+function blink(a,d=260){return tween(d,t=>{a.sy=1-.12*Math.sin(t*PI)},lin).then(()=>a.sy=1)}
+function nod(a){return tween(520,t=>{a.lean=-.12*Math.sin(t*PI)*a.flip()},eio)}
+function crater(){return pupu.named('craterCenter')}
+function smokeUp(s,{d=1800,rise=.22,from=.5,to=1,fadeIn=.15,hold=.55,drift=0,spin=0}={}){
+  return tween(d,t=>{const c=crater();s.g.position.set(c.x+drift*t,0,.02);s.lift=c.y+.01+rise*eout(t);s.sc=lerp(from,to,eout(t));s.roll=spin*t;
+    s.op=t<fadeIn?t/fadeIn:t<hold?1:1-(t-hold)/(1-hold)},lin).then(()=>{s.op=0})}
+function flyTo(target,{d=1200,arc=.08,land='stand'}={}){bird.att=null;bird.setPose('fly');S.flap(3);
+  const x0=bird.g.position.x,z0=bird.g.position.z,y0=bird.lift,T=typeof target==='function'?target:()=>target;
+  return tween(d,t=>{const p=T();if(Math.abs(p.x-x0)>.01)bird.face(p.x>x0?1:-1);bird.at(lerp(x0,p.x,t),lerp(z0,p.z,t));bird.lift=lerp(y0,p.y,t)+Math.sin(t*PI)*arc},eio).then(()=>{if(land)bird.setPose(land)})}
+function perchOn(fn){bird.att=fn}
+function hiccup(big){pupu.setPose('hiccup');S.hic(big);const h=big?.05:.016,grp=[pupu,SET.hillL,SET.hillR,SET.tuft,SET.coral,SET.stones];
+  if(big){marks.op=1;tween(700,t=>{const c=crater();marks.g.position.set(c.x+.2,0,.02);marks.lift=c.y-.08+.05*t;marks.op=1-t},lin)}
+  return Promise.all(grp.map(a=>jump(a,h,big?420:300)))}
+function bounceFlowers(){return Promise.all(flowers.map((f,i)=>tween(i*170,()=>{},lin).then(()=>jump(f,.05,360).then(()=>S.bop(i)))))}
+function signTo(face,d=600){const a=SIGN.spin,b=face?PI:0;S.click();return tween(d,t=>{SIGN.spin=lerp(a,b,t)},eio)}
+function signSwing(amp=.25,n=2){return tween(900*n,t=>{SIGN.swing=amp*Math.sin(t*n*2*PI)*(1-t)},lin)}
+function title(on){$('titlecard').classList.toggle('on',on)}
+
+/* ---------- spreads: layout + starting state ---------- */
+const COMMON=['ridgeL','ridgeR','mountL','mountR','groveL','groveR','sun','cloud','mcloud','hillL','hillR','tree','pupu'];
+const LAYOUT={
+ 1:{on:[...COMMON,'sapling','stump','stones','coral','tuft','mush','clover','broad','fern','seed','fl0','fl1','fl2','fly'],pos:{pupu:[-.5,-.3],tree:[.28,-.44],sapling:[.86,-.55],hillL:[-.42,-.5],hillR:[.5,-.52]}},
+ 2:{treeDir:-1,on:[...COMMON,'sapling','stump','berry','silver','stones','coral','tuft','mush','fern','seed','fl0','fl1','fl2','pebble','straw'],pos:{pupu:[-.3,-.26],tree:[.42,-.46],sapling:[.86,-.55],stump:[-.82,-.1],berry:[-.36,-.43],silver:[.5,-.4],
+    fl0:[-.62,.1],fl1:[-.5,.06],fl2:[-.7,-.02],tuft:[-.85,-.1],coral:[.3,-.18],stones:[.62,-.06],mush:[.72,.1],berry:[-.62,-.44],silver:[.75,-.38],hillL:[-.5,-.52],hillR:[.45,-.53]}},
+ 3:{treeDir:-1,on:[...COMMON,'sapling','stump','berry','silver','stones','coral','tuft','fern','seed','fern2','seed2','fl0','fl1','fl2','pebble','leaf','seed0','seed1','seed2'],pos:{pupu:[-.3,-.26],tree:[.42,-.46],sapling:[.86,-.55],stump:[-.82,-.1],berry:[-.36,-.43],silver:[.5,-.4],
+    fl0:[-.62,.1],fl1:[-.5,.06],fl2:[-.7,-.02],tuft:[-.85,-.1],coral:[.3,-.18],stones:[.62,-.06],berry:[-.62,-.44],silver:[.75,-.38],hillL:[-.5,-.52],hillR:[.45,-.53],fern:[-.9,.12],seed:[.94,-.1],fern2:[.88,.12],seed2:[-.96,-.22]}},
+ 4:{on:[...COMMON,'stump','silver','coral','fern','fern2','broad','mush','clover','fl0','fl1','fl2','fly'],pos:{pupu:[-.2,-.24],tree:[.12,-.47],stump:[-.8,-.12],silver:[.62,-.4],fern:[-.9,.13],fern2:[.92,.1],broad:[.74,.17],mush:[.5,.12],clover:[-.6,.14],
+    fl0:[-.7,.06],fl1:[-.58,.02],fl2:[-.66,-.08],coral:[.42,-.22],hillL:[-.45,-.52],hillR:[.5,-.53],fly:[-.75,-.18]}},
+ 5:{on:[...COMMON,'sapling','stump','berry','coral','clover','tuft','stones','mush','broad','fl0','fl1','fl2','beams','mistA','straw','fly'],pos:{pupu:[-.48,-.28],tree:[.25,-.46],sapling:[-.88,-.55],stump:[.84,-.08],berry:[.02,-.44],coral:[-.12,.02],clover:[.86,.12],
+    tuft:[-.25,-.06],stones:[.55,-.1],mush:[.2,.12],broad:[-.8,.16],fl0:[-.72,.1],fl1:[-.62,.06],fl2:[-.7,-.04],straw:[.42,-.18],hillL:[-.42,-.5],hillR:[.5,-.52],fly:[-.3,-.12]}}};
+function setup(i){
+  for(const a of POPS){a.on=false;a.home=[...a.home0];a.reset()}
+  for(const s of [...Object.values(smoke),marks]){s.on=true;s.f=1;s.op=0}
+  SIGN.face=0;SIGN.spin=0;SIGN.swing=0;signRoot.visible=i>0;nest.on=peek.on=glow.on=false;nest.f=peek.f=glow.f=1;
+  pupu.setPose('idle');pupu.bl=0;bird.setPose('stand');bird.dir=1;title(false);
+  if(!i)return;
+  const L=LAYOUT[i];for(const n of L.on){SET[n].on=true}tree.dir=L.treeDir||1;
+  for(const [n,[x,z]] of Object.entries(L.pos)){SET[n].at(x,z);SET[n].home=[x,z,SET[n].lift]}
+  const lp=tree.named('lowerBranchPerch');signRoot.position.set(lp.x,lp.y,.025);
+  const up=tree.named('upperBranchPerch');nest.at(up.x-.01,.03);nest.lift=up.y-.012;nest.home=[up.x-.01,.03,nest.lift];
+  const rim=M.nest.p.frontRimCenter;peek.at(up.x-.01,.026);peek.lift=up.y-.012;glow.at(up.x,.04);glow.lift=up.y+.02;
+  bird.on=true;straw.att=null;straw.roll=0;
+  if(i===1){bird.on=false;bird.at(1.3,-.3);bird.lift=.5;sunA.lift=.02;straw.on=false}
+  if(i===2){perchOn(sapTop);straw.at(.45,-.12);straw.lift=.004;straw.roll=-.1;pebble.lift=.016}
+  if(i===3){SIGN.spin=PI;perchOn(sapTop);straw.on=false;pebble.at(.12,-.36);pebble.lift=.017;pupu.setPose('hold')}
+  if(i===4){SIGN.spin=PI;perchOn(signTop);pupu.setPose('hold');bird.dir=-1}
+  if(i===5){SIGN.spin=PI;perchOn(signTop);pupu.setPose('idle');pupu.blendTo('hold');pupu.bl=1;nest.on=true;straw.lift=.004;straw.roll=.2;bird.dir=-1}
+}
+const LIGHT={1:'morning',2:'morning',3:'morning',4:'morning',5:'morning'};
+
+/* ---------- the 12 shots as beats ---------- */
+const BEATS=[[],
+ [ // 01–02 山谷的早安
+  async R=>{R.cam(-.3,-.25,.9);await R.all(R.tw(2200,t=>{sunA.lift=lerp(.02,.15,t)},eout),R.wait(600).then(()=>{pupu.setPose('wink');return R.wait(260)}).then(()=>pupu.setPose('idle')));
+   S.puff();smokeUp(smoke.ring,{d:3200,rise:.26,from:.4,to:1});bubble(pupu,'噗','sfx',1100);await R.narr('山谷里的小火山叫噗噗。每天早上，它都要冒个烟圈，打声招呼。')},
+  async R=>{R.cam(.25,-.35,.95);bird.on=true;bird.f=1;straw.on=true;straw.f=1;straw.att='beak';bird.at(1.25,-.25);bird.lift=.5;
+   await flyTo(()=>perch('upperBranchPerch'),{d:2000,arc:.1});perchOn(()=>perch('upperBranchPerch'));bird.face(-1);await R.wait(300)},
+  async R=>{R.cam(0,-.3,.95);await R.jump(pupu,.03,300);pupu.setPose('talk');
+   await R.all(R.say(pupu,'早上——',{cut:700}),R.wait(650).then(()=>{pupu.setPose('idle');S.bigpuff();smokeUp(smoke.burst,{d:900,rise:.12,from:.4,to:1.6,fadeIn:.05,hold:.35});bubble(pupu,'噗！','sfx',900);
+     bird.setPose('startled');straw.att=null;const s0=beakWorld();straw.at(s0.x,s0.z);straw.lift=s0.y;
+     return Promise.all([tween(800,t=>{straw.lift=lerp(s0.y,.004,t*t);straw.roll=-.6*t;straw.at(lerp(s0.x,s0.x+.12,t),lerp(s0.z,-.12,t))},lin),tween(420,()=>{},lin)])}));
+   S.flap(2);bubble(bird,'扑扑','sfx',800);await flyTo(sapTop,{d:900,arc:.12});perchOn(sapTop);bird.face(-1)},
+  async R=>{await R.tw(700,t=>{pupu.lean=.04*Math.sin(t*PI)});await R.wait(800)}
+ ],
+ [ // 03–05 今天请假
+  async R=>{R.cam(.15,-.35,.9);pupu.setPose('reach');await R.wait(450);title(true);S.click();await R.tw(650,t=>{SIGN.spin=lerp(0,PI,eio(t))},lin);
+   await R.wait(400);pupu.setPose('hold');await smokeUp(smoke.puff,{d:1400,rise:.05,from:.5,to:.7,hold:.4});title(false);await R.wait(500)},
+  async R=>{pupu.setPose('talk');await R.say(pupu,'它一定觉得我太吵了。今天请假吧。',{soft:1});pupu.setPose('hold')},
+  async R=>{R.cam(.25,-.15,.9);await flyTo(()=>V3(.47,.004,-.12),{d:1500,arc:.15});bird.att=null;bird.face(-1);await R.tw(400,t=>{bird.lean=-.25*Math.sin(t*PI)});straw.att='beak'},
+  async R=>{pupu.setPose('idle');await R.jump(pupu,.02,260);pupu.setPose('talk');await R.say(pupu,'早……',{cut:700});pupu.setPose('hold');S.gurgle();bubble(pupu,'咕噜……','sfx',1100);
+   bird.setPose('tilt');await R.all(R.tw(1800,t=>{pupu.lean=.05*t;pupu.bl=0},lin),R.wait(400));pupu.setPose('idle');pupu.blendTo('hold');await R.tw(1600,t=>{pupu.bl=t});pupu.setPose('hold');pupu.bl=0;
+   await R.tw(500,t=>{pupu.lean=.05*(1-t)});bird.setPose('stand');await flyTo(sapTop,{d:1300,arc:.12});perchOn(sapTop);bird.face(-1)},
+  async R=>{R.cam(-.2,-.1,.88);await R.wait(300);bubble(pupu,'嗝','sfx',900);const roll=tween(1600,t=>{const x=lerp(-.5,.12,eout(t)),z=lerp(-.15,-.36,eout(t));pebble.at(x,z);pebble.roll=-(x+.5)/.016},lin);S.roll();
+   await R.all(hiccup(false),bounceFlowers(),roll);pupu.setPose('hold');await R.wait(900)}
+ ],
+ [ // 06–07 山坡打了个嗝
+  async R=>{R.cam(.05,-.3,.9);await R.wait(400);bubble(pupu,'嗝！','sfx',1100);
+   const fx=Promise.all([leafA,...seeds].map((s,i)=>tween(i*220,()=>{},lin).then(()=>tween(2600,t=>{s.op=t<.15?t/.15:1-(t-.15)/.85;s.lift=.03+.25*eout(t);s.g.position.x=s.home[0]+.12*t*(i%2?-1:1)+Math.sin(t*6)*.02;s.roll=t*2},lin))));
+   for(const n of['fern','seed','fern2','seed2'])tween(1200,t=>{SET[n].lean=.12*Math.sin(t*PI*3)*(1-t)},lin);
+   await R.all(hiccup(true),bounceFlowers(),tween(700,t=>{SIGN.spin=lerp(PI,PI*1.5,Math.sin(t*PI))},lin).then(()=>signSwing(.22,2)),fx);pupu.setPose('hold')},
+  async R=>{R.cam(.15,-.35,.95);await flyTo(signTop,{d:1300,arc:.1});perchOn(signTop);bird.face(-1);S.click();await R.wait(500);bird.setPose('tilt');await R.say(bird,'你今天请什么假呀？')},
+  async R=>{await R.wait(400);pupu.setPose('talk');await R.say(pupu,'我想跟你说早上好。刚才把你吓着了，我怕再吓你一次。');pupu.setPose('hold');await R.wait(800)}
+ ],
+ [ // 08–10 准备好了吗
+  async R=>{R.cam(0,-.3,.9);bird.setPose('stand');await R.say(bird,'刚才那一下太突然啦。');await blink(bird,300);await R.say(bird,'你想开口，就先眨一下眼。我站稳了，你再说。')},
+  async R=>{await R.wait(300);pupu.setPose('wink');await R.wait(380);pupu.setPose('hold');await R.wait(500);
+   S.click();await R.tw(300,t=>{bird.sy=1-.06*Math.sin(t*PI)});await nod(bird);await R.wait(500);
+   S.exhale();await R.all(R.tw(1300,t=>{pupu.sy=1-.03*Math.sin(Math.min(1,t*1.3)*PI/2)}),R.wait(300).then(()=>{pupu.setPose('idle');return smokeUp(smoke.puff,{d:1500,rise:.06,from:.5,to:.9,hold:.6})}));pupu.sy=1},
+  async R=>{R.cam(0,-.25,.92);pupu.setPose('talk');const sm=smokeUp(smoke.crooked,{d:4200,rise:.3,from:.5,to:1.1,drift:.12,spin:.25,hold:.7});
+   await R.say(pupu,'早上好！');S.softpuff();pupu.setPose('idle');bird.setPose('tilt');await R.say(bird,'早上好，噗噗！');await sm}
+ ],
+ [ // 11–12 明天也见
+  async R=>{R.cam(.25,-.35,.92);bird.setPose('stand');await R.tw(350,t=>{bird.lean=-.3*Math.sin(t*PI)});S.click();await R.tw(650,t=>{SIGN.spin=lerp(PI,0,eio(t))},lin);await R.say(bird,'明天见，噗噗。')},
+  async R=>{await flyTo(()=>V3(.44,.004,-.18),{d:1100,arc:.1});bird.att=null;await R.tw(300,t=>{bird.lean=-.25*Math.sin(t*PI)});straw.att='beak';
+   await flyTo(()=>tree.world(V3(nest.g.position.x,nest.lift+.02,.03)),{d:1200,arc:.1,land:'stand'});S.rustle();bird.on=false;straw.on=false;
+   await R.all(R.tw(2200,t=>{pupu.bl=1-t}),R.wait(800).then(()=>{bubble(pupu,'嘿嘿','sfx',900);return jump(pupu,.015,300)}))},
+  async R=>{R.cam(0,-.2,1);await R.all(R.mood('dim',1100),R.tw(1100,t=>{sunA.lift=lerp(.15,-.12,t)}));await R.wait(300);
+   await R.all(R.mood('dawn',2200),R.tw(2600,t=>{sunA.lift=lerp(-.12,.16,eout(t));beams.op=.2*t;mist.op=.55*t;glow.op=.45*t}),R.narr('第二天清晨。'))},
+  async R=>{R.cam(.2,-.4,.92);peek.on=true;peek.f=1;const y0=peek.lift;await R.tw(800,t=>{peek.lift=y0+.035*eback(t)});await R.say(peek,'噗噗，早上好！');
+   pupu.setPose('wink');await R.wait(380);pupu.setPose('talk');const sm=smokeUp(smoke.ring,{d:3600,rise:.32,from:.35,to:.7,hold:.65});
+   await R.say(pupu,'早上好！');S.softpuff();pupu.setPose('idle');await sm},
+  async R=>{R.cam(0,-.2,1);await R.narr('第二天，是小鸟先跟噗噗打的招呼。');bubble(pupu,'— 完 —','sfx',2200);await R.wait(2000)}
+ ]];
+
+/* ---------- page state / turning / progress ---------- */
+let cur=0,T=null,playing=false,stepI=0;
+function setStatic(){const sL=T?(T.dir>0?T.from:T.to):cur,sR=T?(T.dir>0?T.to:T.from):cur;
+  pageL.visible=sL>0;if(sL>0)pageL.material.map=pageL.material.emissiveMap=PT[sL].L;pageL.material.needsUpdate=true;
+  pageR.material.map=pageR.material.emissiveMap=PT[sR].R;pageR.material.needsUpdate=true;halfL.visible=pageL.visible||!!T;
+  if(T){const a=Math.min(T.from,T.to);leafF.material.map=leafF.material.emissiveMap=PT[a].R;leafB.material.map=leafB.material.emissiveMap=PT[a+1].Lm;leafF.material.needsUpdate=leafB.material.needsUpdate=true}
+  leafF.visible=leafB.visible=!!T}
+function prog(){const n=BEATS[cur].length,el=$('prog');el.style.display=n?'flex':'none';if(el.children.length!==n)el.innerHTML='<i></i>'.repeat(n);
+  [...el.children].forEach((c,i)=>{c.className=i<stepI?'done':(i===stepI&&playing?'now':'')})}
+function ui(){const s=SP[cur];$('ttl').textContent=s.t;$('sub').textContent=s.sub;$('cnt').textContent=cur?`${String(cur).padStart(2,'0')} / ${String(N).padStart(2,'0')}`:'封面';
+  $('bPrev').disabled=cur===0;$('bNext').disabled=cur===N;$('bPlay').textContent=cur===0?'▶ 打开绘本':playing?'■ 停下':(stepI>=BEATS[cur].length?'↻ 再读一遍':'▶ 读这一页');prog()}
+function stop(){RUN++;playing=false;clearBubs();hush();title(false);for(const a of[pupu,bird,peek])if(a)a.talk=0;ui()}
+function rise(){const list=POPS.filter(a=>a.on&&a.g.parent===book).sort((a,b)=>a.order-b.order);list.forEach(a=>a.f=0);S.rustle();
+  return Promise.all(list.map((a,i)=>tween(150+i*45,()=>{},lin,false).then(()=>tween(600,t=>{a.f=t},eback,false))))}
+async function play(){if(cur===0){go(1);return}
+  stop();setup(cur);for(const a of POPS)if(a.on)a.f=1;mood(LIGHT[cur],10,false);
+  const tok=RUN;playing=true;stepI=0;ui();const Rr=mkR(tok);
+  try{for(;stepI<BEATS[cur].length;){await BEATS[cur][stepI](Rr);if(tok!==RUN)throw ABORT;stepI++;prog()}}catch(e){if(e!==ABORT)console.error(e)}
+  if(tok===RUN){playing=false;ui();camT.x=0;camT.z=CZ;camT.zoom=1}}
+function startTurn(dir){if(T)return false;const to=cur+dir;if(to<0||to>N)return false;stop();T={dir,from:cur,to,p:dir>0?0:1};setStatic();setLeaf(T.p);S.rustle();return true}
+function animTurn(end){const p0=T.p,d=Math.abs(end-p0)*1100+150;T.anim=true;
+  return tween(d,t=>{T.p=lerp(p0,end,t);setLeaf(T.p)},eio,false).then(()=>{const done=(T.dir>0&&end===1)||(T.dir<0&&end===0);
+    if(done){const to=T.to;cur=to;stepI=0;setup(cur);for(const a of POPS)if(a.g.parent===book)a.f=0;T=null;setStatic();ui();if(LIGHT[cur])mood(LIGHT[cur],1000,false);$('hint').style.opacity=0;
+      camT.x=cur?0:.5;camT.z=CZ;camT.zoom=cur?1:.82;rise().then(()=>{if(cur===to&&!T&&cur>0)play()})}
+    else{T=null;setStatic();ui()}})}
+function go(i){if(T||i===cur||i<0||i>N)return;const dir=i>cur?1:-1;
+  if(Math.abs(i-cur)>1){stop();cur=i-dir;setup(cur);for(const a of POPS)if(a.g.parent===book)a.f=a.on?1:0;setStatic()}
+  if(startTurn(dir))animTurn(dir>0?1:0)}
+
+/* ---------- camera ---------- */
+const camT={x:.5,z:CZ,zoom:.82},camC={x:.5,z:CZ,zoom:.82,px:0,py:0,az:0,el:54,uz:1},PTR={x:0,y:0},USER={az:0,el:54,zoom:1};
+function fitD(){const a=innerWidth/innerHeight,v=34*PI/180,hf=2*Math.atan(Math.tan(v/2)*a);return Math.max(1.3/Math.tan(hf/2),1.16/Math.tan(v/2))}
+function placeCam(dt){const k=1-Math.exp(-dt*2.2),k2=1-Math.exp(-dt*9);for(const q of['x','z','zoom'])camC[q]+=(camT[q]-camC[q])*k;camC.px+=(PTR.x-camC.px)*k;camC.py+=(PTR.y-camC.py)*k;
+  camC.az+=(USER.az-camC.az)*k2;camC.el+=(USER.el-camC.el)*k2;camC.uz+=(USER.zoom-camC.uz)*k2;
+  const D=fitD()*camC.zoom*camC.uz,el=(camC.el+camC.py*3)*PI/180,az=camC.az*PI/180+camC.px*.06;
+  cam.position.set(camC.x+Math.sin(az)*Math.cos(el)*D,Math.sin(el)*D,camC.z+Math.cos(az)*Math.cos(el)*D);cam.lookAt(camC.x,0,camC.z)}
+function resize(){R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight,true);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);
+
+/* ---------- input ---------- */
+const ray=new THREE.Raycaster(),v2=new THREE.Vector2();let DR=null;const PTS=new Map();let PINCH=null;
+function rayAt(e){v2.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(v2,cam)}
+function onBook(e){rayAt(e);return ray.intersectObject(book,true).some(h=>h.object.visible)}
+cv.addEventListener('pointerdown',e=>{ac();PTS.set(e.pointerId,{x:e.clientX,y:e.clientY});cv.setPointerCapture(e.pointerId);
+  if(PTS.size===2){const [a,b]=[...PTS.values()];PINCH={d:Math.hypot(a.x-b.x,a.y-b.y),z:USER.zoom,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,az:USER.az,el:USER.el};if(DR&&DR.t&&T&&!T.anim)animTurn(T.dir>0?0:1);DR=null;return}
+  const orbit=e.button===2||e.shiftKey||!onBook(e);DR={x:e.clientX,y:e.clientY,t:false,orbit,az:USER.az,el:USER.el};if(orbit)cv.classList.add('orbit')});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('wheel',e=>{e.preventDefault();USER.zoom=clamp(USER.zoom*(1+e.deltaY*.0012),.45,1.7)},{passive:false});
+cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){PTR.x=(e.clientX/innerWidth-.5)*2;PTR.y=(e.clientY/innerHeight-.5)*2}
+  if(PTS.has(e.pointerId))PTS.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(PINCH&&PTS.size===2){const [a,b]=[...PTS.values()],d=Math.hypot(a.x-b.x,a.y-b.y);USER.zoom=clamp(PINCH.z*PINCH.d/Math.max(20,d),.45,1.7);USER.az=PINCH.az-((a.x+b.x)/2-PINCH.mx)*.35;USER.el=clamp(PINCH.el+((a.y+b.y)/2-PINCH.my)*.2,18,84);return}
+  if(!DR)return;const dx=e.clientX-DR.x;
+  if(DR.orbit){if(Math.hypot(dx,e.clientY-DR.y)>4)DR.moved=true;USER.az=DR.az-dx*.4;USER.el=clamp(DR.el+(e.clientY-DR.y)*.25,18,84);return}
+  if(!DR.t&&Math.abs(dx)>14&&!T){const flip=Math.cos(camC.az*PI/180)<0?-1:1,dir=(dx<0?1:-1)*flip;DR.flip=flip;if(startTurn(dir)){DR.t=true;cv.classList.add('drag');$('hint').style.opacity=0}}
+  if(DR.t&&T&&!T.anim){const q=clamp(dx*-(DR.flip||1)*T.dir/(innerWidth*.45));T.p=T.dir>0?q:1-q;setLeaf(T.p)}});
+cv.addEventListener('pointerup',e=>{PTS.delete(e.pointerId);if(PTS.size<2)PINCH=null;cv.classList.remove('drag','orbit');if(!DR)return;const d=DR;DR=null;
+  if(d.orbit){if(!d.moved)poke(e);return}
+  if(d.t&&T&&!T.anim){const p=T.dir>0?T.p:1-T.p;animTurn(p>.28?(T.dir>0?1:0):(T.dir>0?0:1));return}
+  if(Math.hypot(e.clientX-d.x,e.clientY-d.y)<8)poke(e)});
+cv.addEventListener('pointercancel',e=>{PTS.delete(e.pointerId);PINCH=null;cv.classList.remove('drag','orbit');DR=null;if(T&&!T.anim)animTurn(T.dir>0?0:1)});
+const POKE={pp:['早上好呀！','今天的烟圈圆不圆？','我会小声一点的。'],bd:['早上好！','啾？','我的窝快搭好啦。']};
+function poke(e){if(playing||T||!cur)return;rayAt(e);
+  const hits=ray.intersectObjects([signF,signB,...POPS.filter(a=>a.on&&a.g.visible&&!a.fx).map(a=>a.mesh)],false);if(!hits.length)return;
+  const o=hits[0].object;
+  if(o.userData.sign){SIGN.face=SIGN.spin>PI/2?0:1;signTo(SIGN.face,600,false);signSwing(.12,1);return}
+  const a=o.userData.actor;if(!a||BUBS.some(b=>b.a===a))return;
+  if(a===pupu){S.puff();smokeUp(smoke.ring,{d:2400,rise:.22,from:.35,to:.7});const l=POKE.pp[Math.floor(Math.random()*3)];bubble(pupu,l,'',1800);hush();speak(l,'pp');jump(pupu,.02,300,false);return}
+  if(a===bird){S.chirp();const l=POKE.bd[Math.floor(Math.random()*3)];bubble(bird,l,'',1600);hush();speak(l,'bd');jump(bird,.03,300,false);return}
+  if(flowers.includes(a)){S.bop(flowers.indexOf(a));jump(a,.05,360,false);return}
+  if(a===fly){jump(a,.05,500,false);return}
+  S.rustle();jump(a,.015,260,false)}
+
+/* ---------- buttons ---------- */
+$('bNext').onclick=()=>{ac();go(cur+1)};$('bPrev').onclick=()=>{ac();go(cur-1)};
+$('bPlay').onclick=()=>{ac();if(playing){stop();camT.x=0;camT.z=CZ;camT.zoom=1}else play()};
+$('bReset').onclick=()=>{camT.x=cur?0:.5;camT.z=CZ;camT.zoom=cur?1:.82;PTR.x=PTR.y=0;USER.az=Math.round(USER.az/360)*360;USER.el=54;USER.zoom=1};
+$('bRotL').onclick=()=>{USER.az+=45};$('bRotR').onclick=()=>{USER.az-=45};
+$('bSnd').onclick=e=>{SND=!SND;e.currentTarget.textContent='声音：'+(SND?'开':'关');e.currentTarget.setAttribute('aria-pressed',SND);if(!SND)hush()};
+const SHOTS=['','镜 01–02','镜 03–05','镜 06–07','镜 08–10','镜 11–12'];
+$('tocList').innerHTML=SP.map((s,i)=>`<li><button data-i="${i}"><span>${i?String(i).padStart(2,'0'):'封面'}</span>${s.t}<em>${SHOTS[i]}</em></button></li>`).join('');
+$('tocList').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('toc').classList.remove('on');go(+b.dataset.i)};
+$('bToc').onclick=()=>$('toc').classList.add('on');$('bTocX').onclick=()=>$('toc').classList.remove('on');$('toc').onclick=e=>{if(e.target.id==='toc')$('toc').classList.remove('on')};
+addEventListener('keydown',e=>{if(e.key==='q'||e.key==='Q')USER.az+=15;if(e.key==='e'||e.key==='E')USER.az-=15;if(e.key==='ArrowUp')USER.el=clamp(USER.el+5,18,84);if(e.key==='ArrowDown')USER.el=clamp(USER.el-5,18,84);
+  if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);if(e.key===' '){e.preventDefault();$('bPlay').click()}});
+
+/* ---------- loop ---------- */
+let last=performance.now();const V=new THREE.Vector3();
+function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;now=ts;
+  for(let i=TW.length-1;i>=0;i--){const w=TW[i];if(w.tok!==null&&w.tok!==RUN){TW.splice(i,1);w.res();continue}const t=clamp((now-w.t0)/w.d);w.fn(w.ease(t));if(t>=1){TW.splice(i,1);w.res()}}
+  const pr=T?(T.dir>0?T.p:1-T.p):0,G=T?clamp(1-pr/.3):1,t=ts/1000,yaw=camC.az*PI/180;
+  book.updateMatrixWorld(true);
+  if(bird.att){const p=bird.att();bird.at(p.x,p.z);bird.lift=p.y}
+  signG.rotation.y=SIGN.spin;signG.rotation.z=SIGN.swing+Math.sin(t*1.4)*.015;signRoot.visible=cur>0&&tree.g.visible;
+  for(const a of POPS)a.update(t,G,yaw);
+  if(straw.att==='beak'){book.updateMatrixWorld(true);const p=beakWorld();straw.dir=bird.dir;straw.at(p.x,p.z+.004);straw.lift=p.y-.004;straw.roll=0}
+  if(fly.on){const np=Math.floor(t*7)%2?'c':'o';if(fly.pose!==np)fly.setPose(np);fly.body.position.x+=Math.sin(t*.7)*.06}
+  placeCam(dt);R.render(scene,cam);
+  for(let i=BUBS.length-1;i>=0;i--){const b=BUBS[i];if(now>b.until||!b.a||!b.a.g.visible){b.el.remove();BUBS.splice(i,1);continue}
+    V.copy(b.a.top()).project(cam);b.el.style.left=clamp((V.x+1)/2*innerWidth,90,innerWidth-90)+'px';b.el.style.top=clamp((1-V.y)/2*innerHeight,80,innerHeight)+'px'}
+  requestAnimationFrame(frame)}
+
+/* ---------- boot ---------- */
+(async()=>{
+  try{await loadAll()}catch(e){$('lp').textContent='图片加载失败，请刷新重试';return}
+  const tt=TX.walnut_table;tt.wrapS=tt.wrapT=THREE.MirroredRepeatWrapping;tt.repeat.set(3,5);
+  table=new THREE.Mesh(new THREE.PlaneGeometry(9,9),new THREE.MeshStandardMaterial({map:tt,roughness:.85}));table.rotation.x=-PI/2;table.position.y=-.049;table.receiveShadow=true;scene.add(table);
+  buildActors();buildPages();resize();Object.assign(LS,snap('morning'));applyLS();setup(0);setStatic();ui();
+  requestAnimationFrame(frame);setTimeout(()=>{$('load').style.opacity=0;setTimeout(()=>$('load').remove(),700)},300);
+  const h=location.hash.match(/^#p(\d)$/);if(h)setTimeout(()=>go(+h[1]),900);
+})();
+}
+</script>
+</body>
+</html>
